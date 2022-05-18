@@ -27,72 +27,62 @@ import org.junit.jupiter.api.Test;
  */
 class KrpcGeneratorTest {
 
-    private static final String MESSAGE_SCHEMAS_PATH = "message-schemas/common/message";
+    private static final String MESSAGE_SPECS_PATH = "message-specs/common/message";
     private static final String OUTPUT_DIR = "generated-test-sources/krpc";
+    private static final String TEST_CLASSES_DIR = "test-classes";
 
     @Test
     public void testHelloWorld() throws IOException {
-        KrpcGenerator gen = new KrpcGenerator();
-
-        File outputDir = getOutputDir();
-        outputDir.mkdirs();
-        gen.setOutputDir(outputDir);
-
-        gen.setSchemaDir(getSchemaDir());
-
-        gen.setTemplateDir(new File("src/test/resources/hello-world"));
-
-        gen.setTemplateNames(List.of("example.ftl"));
-
-        gen.setOutputFilePattern("${schemaName}.txt");
+        KrpcGenerator gen = new KrpcGenerator.Builder()
+                .withMessageSpecDir(getMessageSpecDir())
+                .withMessageSpecFilter("*.json")
+                .withTemplateDir(getTemplateDir())
+                .withTemplateNames(List.of("hello-world/example.ftl"))
+                .withOutputDir(getOutputDir())
+                .withOutputFilePattern("${messageSpecName}.txt")
+                .build();
 
         gen.generate();
     }
 
     @Test
     public void testKrpcData() throws IOException {
-        KrpcGenerator gen = new KrpcGenerator();
-
-        File outputDir = getOutputDir();
-        outputDir.mkdirs();
-        gen.setOutputDir(outputDir);
-
-        gen.setSchemaDir(getSchemaDir());
-
-        gen.setTemplateDir(new File("src/test/resources/Data"));
-
-        gen.setTemplateNames(List.of("example.ftl"));
-
-        gen.setOutputFilePattern("${schemaName}.java");
+        KrpcGenerator gen = new KrpcGenerator.Builder()
+                .withMessageSpecDir(getMessageSpecDir())
+                .withMessageSpecFilter("*.json")
+                .withTemplateDir(getTemplateDir())
+                .withTemplateNames(List.of("Data/example.ftl"))
+                .withOutputDir(getOutputDir())
+                .withOutputFilePattern("${messageSpecName}.java")
+                .build();
 
         gen.generate();
     }
 
     @Test
     public void testKproxyFilter() throws IOException {
-        KrpcGenerator gen = new KrpcGenerator();
-
-        File outputDir = getOutputDir();
-        outputDir.mkdirs();
-        gen.setOutputDir(outputDir);
-
-        gen.setSchemaDir(getSchemaDir());
-
-        gen.setTemplateDir(new File("src/test/resources/Kproxy"));
-
-        gen.setTemplateNames(List.of("Filter.ftl"));
-
-        gen.setOutputFilePattern("${schemaName}Filter.java");
+        KrpcGenerator gen = new KrpcGenerator.Builder()
+                .withMessageSpecDir(getMessageSpecDir())
+                .withMessageSpecFilter("*.json")
+                .withTemplateDir(getTemplateDir())
+                .withTemplateNames(List.of("Kproxy/Filter.ftl"))
+                .withOutputDir(getOutputDir())
+                .withOutputFilePattern("${messageSpecName}Filter.java")
+                .build();
 
         gen.generate();
     }
 
-    private static File getSchemaDir() {
-        return getBuildDir().resolve(MESSAGE_SCHEMAS_PATH).toFile();
+    private static File getMessageSpecDir() {
+        return getBuildDir().resolve(MESSAGE_SPECS_PATH).toFile();
     }
 
     private static File getOutputDir() {
         return getBuildDir().resolve(OUTPUT_DIR).toFile();
+    }
+
+    private static File getTemplateDir() {
+        return getBuildDir().resolve(TEST_CLASSES_DIR).toFile();
     }
 
     private static Path getBuildDir() {
